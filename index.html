@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2E7D32">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <title>吃掉那只青蛙 - 时间管理</title>
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --primary-light: #4CAF50;
+            --secondary: #FF6F00;
+            --bg: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --text: #333333;
+            --text-light: #666666;
+            --danger: #D32F2F;
+            --success: #388E3C;
+            --warning: #F57C00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .frog-icon {
+            font-size: 1.8rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .frog-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+        }
+
+        .frog-card.priority-a {
+            border-left-color: var(--danger);
+        }
+
+        .frog-card.priority-b {
+            border-left-color: var(--warning);
+        }
+
+        .frog-card.priority-c {
+            border-left-color: #9E9E9E;
+        }
+
+        .frog-card.priority-d {
+            border-left-color: #2196F3;
+        }
+
+        .frog-card.priority-e {
+            border-left-color: #757575;
+        }
+
+        .frog-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .frog-info {
+            flex: 1;
+        }
+
+        .frog-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .frog-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .priority-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .priority-a { background: #FFEBEE; color: var(--danger); }
+        .priority-b { background: #FFF3E0; color: var(--warning); }
+        .priority-c { background: #F5F5F5; color: #757575; }
+        .priority-d { background: #E3F2FD; color: #1976D2; }
+        .priority-e { background: #EEEEEE; color: #616161; }
+
+        .frog-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255,111,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: #E8F5E9;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-light);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .priority-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .priority-option {
+            padding: 12px 8px;
+            text-align: center;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .priority-option:hover {
+            border-color: var(--primary);
+        }
+
+        .priority-option.selected {
+            border-color: var(--primary);
+            background: #E8F5E9;
+        }
+
+        .priority-option .letter {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .priority-option .desc {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .tip-box {
+            background: #FFF8E1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: #795548;
+            border-left: 3px solid var(--secondary);
+        }
+
+        .review-question {
+            margin-bottom: 20px;
+        }
+
+        .review-question label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .review-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .review-option {
+            padding: 8px 16px;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .review-option:hover {
+            border-color: var(--primary);
+        }
+
+        .review-option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .settings-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .settings-item {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: #E0E0E0;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--primary);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(22px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 300;
+            animation: slideDown 0.3s ease;
+            max-width: 90%;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .welcome-tip {
+            background: #E8F5E9;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-tip h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .welcome-tip p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 12px;
+            }
+            
+            .priority-options {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <h1><span class="frog-icon">🐸</span> 吃掉那只青蛙</h1>
+    </header>
+
+    <!-- 主内容区 -->
+    <div class="container" id="mainView">
+        <!-- 每日青蛙看板 -->
+        <div id="frogView">
+            <div class="welcome-tip" id="welcomeTip">
+                <h3>🌅 今日寄语</h3>
+                <p id="dailyQuote">"先吃掉最大、最丑的青蛙，剩下的事都会变得简单。"</p>
+            </div>
+
+            <!-- 核心青蛙区域 -->
+            <div class="section-title">
+                <span>🎯</span> 今日核心青蛙 (A类任务)
+            </div>
+            <div id="coreFrogs">
+                <div class="empty-state" id="emptyCoreFrogs">
+                    <div class="icon">🐸</div>
+                    <p>还没有添加核心青蛙</p>
+                    <p style="font-size: 0.85rem; margin-top: 8px;">点击下方 + 添加今日最重要的任务</p>
+                </div>
+            </div>
+
+            <!-- 小任务区域 -->
+            <div class="section-title" style="margin-top: 24px;">
+                <span>📋</span> 小任务 (B-E类)
+            </div>
+            <div id="smallTasks">
+                <div class="empty-state" id="emptySmallTasks" style="display: none;">
+                    <div class="icon">📝</div>
+                    <p>暂无小任务</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 每周复盘视图 -->
+        <div id="reviewView" class="hidden">
+            <h2 style="margin-bottom: 16px;">📊 本周回顾</h2>
+            
+            <div class="stats-card">
+                <div class="stats-number" id="weekCompletionRate">0%</div>
+                <div class="stats-label">A类任务完成率</div>
+            </div>
+
+            <div class="tip-box">
+                <strong>二八定律：</strong>80%的成果来自20%的核心任务。聚焦高价值事，拒绝低效忙碌！
+            </div>
+
+            <h3 style="margin: 20px 0 12px;">本周完成的A类任务</h3>
+            <div id="weekCompletedFrogs">
+                <div class="empty-state">
+                    <p>暂无完成记录</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置视图 -->
+        <div id="settingsView" class="hidden">
+            <h2 style="margin-bottom: 16px;">⚙️ 设置</h2>
+
+            <div class="settings-list">
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 500;">青蛙启动时间</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">每日提醒时间</div>
+                    </div>
+                    <input type="time" id="frogTime" class="form-input" style="width: auto; padding: 8px;" value="09:00">
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 500;">30分钟提醒</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">未操作时提醒</div>
+                    </div>
+                    <div class="toggle active" id="reminderToggle" onclick="toggleReminder()"></div>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 500;">导出数据</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">下载所有记录</div>
+                    </div>
+                    <button class="btn btn-outline btn-small" onclick="exportData()">导出</button>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 500;">清空数据</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">谨慎操作，不可恢复</div>
+                    </div>
+                    <button class="btn btn-danger btn-small" onclick="clearData()">清空</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; padding: 16px; background: #F5F5F5; border-radius: 12px;">
+                <h4 style="margin-bottom: 8px;">📖 核心法则</h4>
+                <ul style="font-size: 0.85rem; color: var(--text-light); line-height: 1.8; padding-left: 20px;">
+                    <li><strong>ABCDE法则：</strong>A类必须做，B类应该做，C类可以做，D类可委派，E类可删除</li>
+                    <li><strong>二八定律：</strong>80%成果来自20%核心任务</li>
+                    <li><strong>最小行动单元：</strong>把大任务拆分为15-30分钟的小任务</li>
+                    <li><strong>Eat the Frog：</strong>每天早上先完成最重要的任务</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 悬浮添加按钮 -->
+    <button class="fab" onclick="openAddFrogModal()">+</button>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchView('frog')">
+            <span class="nav-icon">🐸</span>
+            <span>青蛙</span>
+        </div>
+        <div class="nav-item" onclick="switchView('review')">
+            <span class="nav-icon">📊</span>
+            <span>复盘</span>
+        </div>
+        <div class="nav-item" onclick="switchView('settings')">
+            <span class="nav-icon">⚙️</span>
+            <span>设置</span>
+        </div>
+    </nav>
+
+    <!-- 添加青蛙弹窗 -->
+    <div class="modal" id="addFrogModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🐸 添加青蛙</h2>
+                <button class="modal-close" onclick="closeModal('addFrogModal')">&times;</button>
+            </div>
+
+            <div class="tip-box" id="addTipBox">
+                💡 <strong>思考引导：</strong>这件事是否是今天能带来最大价值的事？是否是你最不想做但必须做的？
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">任务名称 *</label>
+                <input type="text" class="form-input" id="frogTitle" placeholder="例如：完成项目报告">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">最小执行单元 (降低启动门槛)</label>
+                <input type="text" class="form-input" id="frogUnit" placeholder="例如：写大纲（30分钟）">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">优先级 *</label>
+                <div class="priority-options" id="priorityOptions">
+                    <div class="priority-option priority-a" data-priority="A" onclick="selectPriority('A')">
+                        <div class="letter">A</div>
+                        <div class="desc">必须做</div>
+                    </div>
+                    <div class="priority-option priority-b" data-priority="B" onclick="selectPriority('B')">
+                        <div class="letter">B</div>
+                        <div class="desc">应该做</div>
+                    </div>
+                    <div class="priority-option priority-c" data-priority="C" onclick="selectPriority('C')">
+                        <div class="letter">C</div>
+                        <div class="desc">可以做</div>
+                    </div>
+                    <div class="priority-option priority-d" data-priority="D" onclick="selectPriority('D')">
+                        <div class="letter">D</div>
+                        <div class="desc">可委派</div>
+                    </div>
+                    <div class="priority-option priority-e" data-priority="E" onclick="selectPriority('E')">
+                        <div class="letter">E</div>
+                        <div class="desc">可删除</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box hidden" id="priorityTip">
+                💡 <span id="priorityTipText"></span>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" onclick="addFrog()">添加青蛙</button>
+        </div>
+    </div>
+
+    <!-- 每日复盘弹窗 -->
+    <div class="modal" id="dailyReviewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📝 每日复盘</h2>
+                <button class="modal-close" onclick="closeModal('dailyReviewModal')">&times;</button>
+            </div>
+
+            <div class="review-question">
+                <label>1. 今天是否吃掉了核心青蛙？</label>
+                <div class="review-options" id="reviewQ1">
+                    <div class="review-option" data-value="是" onclick="selectReview(1, '是')">是</div>
+                    <div class="review-option" data-value="否" onclick="selectReview(1, '否')">否</div>
+                    <div class="review-option" data-value="部分完成" onclick="selectReview(1, '部分完成')">部分完成</div>
+                </div>
+            </div>
+
+            <div class="review-question">
+                <label>2. 没完成的原因是？</label>
+                <div class="review-options" id="reviewQ2">
+                    <div class="review-option" data-value="拖延" onclick="selectReview(2, '拖延')">拖延</div>
+                    <div class="review-option" data-value="任务拆分太粗" onclick="selectReview(2, '任务拆分太粗')">任务拆分太粗</div>
+                    <div class="review-option" data-value="优先级判断错误" onclick="selectReview(2, '优先级判断错误')">优先级判断错误</div>
+                    <div class="review-option" data-value="外部干扰" onclick="selectReview(2, '外部干扰')">外部干扰</div>
+                </div>
+            </div>
+
+            <div class="review-question">
+                <label>3. 明天如何调整？</label>
+                <textarea class="form-input form-textarea" id="reviewQ3" placeholder="简短输入..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" onclick="saveDailyReview()">保存复盘</button>
+        </div>
+    </div>
+
+    <!-- 成就提示弹窗 -->
+    <div class="modal" id="achievementModal">
+        <div class="modal-content" style="text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 16px;">🎉</div>
+            <h2 style="margin-bottom: 12px;">恭喜！吃掉了今天最难的青蛙！</h2>
+            <p style="color: var(--text-light); margin-bottom: 20px;">接下来的事都会更轻松~</p>
+            <button class="btn btn-primary" onclick="closeModal('achievementModal')">继续加油！</button>
+        </div>
+    </div>
+
+    <!-- 法则提示弹窗 -->
+    <div class="modal" id="tipModal">
+        <div class="modal-content" style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 16px;" id="tipIcon">💡</div>
+            <h2 style="margin-bottom: 12px;" id="tipTitle">法则提示</h2>
+            <p style="color: var(--text-light); margin-bottom: 20px;" id="tipContent"></p>
+            <button class="btn btn-primary" onclick="closeModal('tipModal')">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== 数据存储 =====
+        const STORAGE_KEY = 'eat_that_frog_data';
+        const SETTINGS_KEY = 'eat_that_frog_settings';
+
+        // 默认数据
+        let appData = {
+            frogs: [],
+            dailyReviews: [],
+            weekReviews: [],
+            lastActionTime: Date.now()
+        };
+
+        let settings = {
+            frogTime: '09:00',
+            reminderEnabled: true
+        };
+
+        let currentPriority = 'A';
+        let currentReview = { q1: '', q2: '', q3: '' };
+
+        // 每日寄语
+        const quotes = [
+            '"先吃掉最大、最丑的青蛙，剩下的事都会变得简单。"',
+            '"二八定律：80%的成果来自20%的核心任务。"',
+            '"拖延的代价：每推迟一分钟，就需要花更多精力面对它。"',
+            '"完成最重要的任务，就是对自己最好的投资。"',
+            '"成功的秘诀是开始行动。" - 马克·吐温'
+        ];
+
+        // 法则提示
+        const lawTips = {
+            add: '二八定律：聚焦能带来80%价值的20%任务',
+           拖延: '拖延的代价：每推迟一分钟，你就需要花更多精力面对它',
+           完成: '恭喜！吃掉了今天最难的青蛙，接下来的事都会更轻松',
+            D: '记住：把不重要的事委派出去，聚焦你的A类任务',
+            E: '这件事真的必须做吗？考虑从清单中删除。'
+        };
+
+        // ===== 初始化 =====
+        function init() {
+            loadData();
+            loadSettings();
+            renderFrogs();
+            renderWeekReview();
+            setDailyQuote();
+            checkDailyReview();
+            setupReminder();
+            
+            // 检查上次操作时间
+            const now = Date.now();
+            const diff = now - appData.lastActionTime;
+            if (diff > 30 * 60 * 1000 && settings.reminderEnabled) {
+                showToast('🐸 现在是吃掉青蛙的最佳时机，哪怕只做10分钟');
+            }
+        }
+
+        // 加载数据
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+        }
+
+        // 保存数据
+        function saveData() {
+            appData.lastActionTime = Date.now();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        }
+
+        // 加载设置
+        function loadSettings() {
+            const saved = localStorage.getItem(SETTINGS_KEY);
+            if (saved) {
+                settings = JSON.parse(saved);
+            }
+            document.getElementById('frogTime').value = settings.frogTime;
+            document.getElementById('reminderToggle').classList.toggle('active', settings.reminderEnabled);
+        }
+
+        // 保存设置
+        function saveSettings() {
+            settings.frogTime = document.getElementById('frogTime').value;
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        }
+
+        // ===== 视图切换 =====
+        function switchView(view) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+
+            document.getElementById('frogView').classList.add('hidden');
+            document.getElementById('reviewView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            if (view === 'frog') {
+                document.getElementById('frogView').classList.remove('hidden');
+            } else if (view === 'review') {
+                document.getElementById('reviewView').classList.remove('hidden');
+                renderWeekReview();
+            } else if (view === 'settings') {
+                document.getElementById('settingsView').classList.remove('hidden');
+            }
+        }
+
+        // ===== 每日寄语 =====
+        function setDailyQuote() {
+            const today = new Date().getDate();
+            const quoteIndex = today % quotes.length;
+            document.getElementById('dailyQuote').textContent = quotes[quoteIndex];
+        }
+
+        // ===== 渲染青蛙列表 =====
+        function renderFrogs() {
+            const coreContainer = document.getElementById('coreFrogs');
+            const smallContainer = document.getElementById('smallTasks');
+            const today = new Date().toDateString();
+
+            // 筛选今日青蛙
+            const todayFrogs = appData.frogs.filter(f => f.date === today);
+            const coreFrogs = todayFrogs.filter(f => f.priority === 'A');
+            const smallFrogs = todayFrogs.filter(f => f.priority !== 'A');
+
+            // 渲染核心青蛙
+            if (coreFrogs.length === 0) {
+                document.getElementById('emptyCoreFrogs').style.display = 'block';
+                coreContainer.querySelectorAll('.frog-card').forEach(c => c.remove());
+            } else {
+                document.getElementById('emptyCoreFrogs').style.display = 'none';
+                coreContainer.querySelectorAll('.frog-card').forEach(c => c.remove());
+                
+                coreFrogs.forEach((frog, index) => {
+                    coreContainer.insertBefore(createFrogCard(frog, index), document.getElementById('emptyCoreFrogs'));
+                });
+            }
+
+            // 渲染小任务
+            if (smallFrogs.length === 0) {
+                document.getElementById('emptySmallTasks').style.display = 'block';
+                smallContainer.querySelectorAll('.frog-card').forEach(c => c.remove());
+            } else {
+                document.getElementById('emptySmallTasks').style.display = 'none';
+                smallContainer.querySelectorAll('.frog-card').forEach(c => c.remove());
+                
+                smallFrogs.forEach((frog, index) => {
+                    smallContainer.insertBefore(createFrogCard(frog, index, true), document.getElementById('emptySmallTasks'));
+                });
+            }
+        }
+
+        // 创建青蛙卡片
+        function createFrogCard(frog, index, isSmall = false) {
+            const card = document.createElement('div');
+            card.className = `frog-card priority-${frog.priority.toLowerCase()}`;
+            
+            const priorityLabels = {
+                A: '必须做',
+                B: '应该做',
+                C: '可以做',
+                D: '可委派',
+                E: '可删除'
+            };
+
+            card.innerHTML = `
+                <div class="frog-content">
+                    <div class="frog-info">
+                        <div class="frog-title">${frog.title}</div>
+                        <div class="frog-meta">
+                            <span class="priority-tag priority-${frog.priority.toLowerCase()}">${frog.priority}类 - ${priorityLabels[frog.priority]}</span>
+                            ${frog.unit ? `<span>⏱️ ${frog.unit}</span>` : ''}
+                            ${frog.completed ? `<span style="color: var(--success);">✅ 已完成</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="frog-actions">
+                        ${!frog.completed ? `
+                            <button class="btn btn-success btn-small" onclick="completeFrog(${index}, ${isSmall})">完成</button>
+                            <button class="btn btn-outline btn-small" onclick="deleteFrog(${index}, ${isSmall})">删除</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // ===== 添加青蛙 =====
+        function selectPriority(priority) {
+            currentPriority = priority;
+            document.querySelectorAll('.priority-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.priority === priority);
+            });
+
+            const tipBox = document.getElementById('priorityTip');
+            const tipText = document.getElementById('priorityTipText');
+            
+            if (priority === 'D') {
+                tipBox.classList.remove('hidden');
+                tipText.textContent = lawTips.D;
+            } else if (priority === 'E') {
+                tipBox.classList.remove('hidden');
+                tipText.textContent = lawTips.E;
+            } else {
+                tipBox.classList.add('hidden');
+            }
+        }
+
+        function addFrog() {
+            const title = document.getElementById('frogTitle').value.trim();
+            const unit = document.getElementById('frogUnit').value.trim();
+
+            if (!title) {
+                showToast('请输入任务名称');
+                return;
+            }
+
+            // 如果是A类任务，检查是否已有核心青蛙
+            if (currentPriority === 'A') {
+                const today = new Date().toDateString();
+                const todayCoreFrogs = appData.frogs.filter(f => f.date === today && f.priority === 'A');
+                if (todayCoreFrogs.length >= 3) {
+                    showToast('核心青蛙已达3个上限');
+                    return;
+                }
+            }
+
+            appData.frogs.push({
+                id: Date.now(),
+                title,
+                unit,
+                priority: currentPriority,
+                completed: false,
+                date: new Date().toDateString(),
+                createdAt: Date.now()
+            });
+
+            // 如果是添加任务，显示法则提示
+            if (Math.random() < 0.3) {
+                showTipModal('💡', '法则提示', lawTips.add);
+            }
+
+            saveData();
+            renderFrogs();
+            closeModal('addFrogModal');
+            resetAddForm();
+            showToast('🐸 青蛙添加成功！');
+        }
+
+        function resetAddForm() {
+            document.getElementById('frogTitle').value = '';
+            document.getElementById('frogUnit').value = '';
+            currentPriority = 'A';
+            document.querySelectorAll('.priority-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.priority === 'A');
+            });
+            document.getElementById('priorityTip').classList.add('hidden');
+        }
+
+        // ===== 完成青蛙 =====
+        function completeFrog(index, isSmall) {
+            const today = new Date().toDateString();
+            let frogs = appData.frogs.filter(f => f.date === today);
+            if (isSmall) {
+                frogs = frogs.filter(f => f.priority !== 'A');
+            } else {
+                frogs = frogs.filter(f => f.priority === 'A');
+            }
+
+            if (frogs[index]) {
+                frogs[index].completed = true;
+                frogs[index].completedAt = Date.now();
+                saveData();
+                renderFrogs();
+                
+                // 如果是核心青蛙，弹出成就
+                if (frogs[index].priority === 'A') {
+                    showAchievement();
+                }
+            }
+        }
+
+        // ===== 删除青蛙 =====
+        function deleteFrog(index, isSmall) {
+            const today = new Date().toDateString();
+            let frogs = appData.frogs.filter(f => f.date === today);
+            if (isSmall) {
+                frogs = frogs.filter(f => f.priority !== 'A');
+            } else {
+                frogs = frogs.filter(f => f.priority === 'A');
+            }
+
+            if (frogs[index]) {
+                const realIndex = appData.frogs.findIndex(f => f.id === frogs[index].id);
+                if (realIndex > -1) {
+                    appData.frogs.splice(realIndex, 1);
+                    saveData();
+                    renderFrogs();
+                    showToast('青蛙已删除');
+                }
+            }
+        }
+
+        // ===== 每日复盘 =====
+        function checkDailyReview() {
+            const today = new Date().toDateString();
+            const hasReviewed = appData.dailyReviews.some(r => r.date === today);
+            
+            if (!hasReviewed) {
+                // 检查是否所有青蛙都完成了
+                const todayFrogs = appData.frogs.filter(f => f.date === today);
+                const allCompleted = todayFrogs.length > 0 && todayFrogs.every(f => f.completed);
+                
+                // 每天下午6点后或所有任务完成时提示复盘
+                const hour = new Date().getHours();
+                if (hour >= 18 || allCompleted) {
+                    setTimeout(() => {
+                        document.getElementById('dailyReviewModal').classList.add('active');
+                    }, 1000);
+                }
+            }
+        }
+
+        function selectReview(q, value) {
+            currentReview['q' + q] = value;
+            const container = document.getElementById('reviewQ' + q);
+            container.querySelectorAll('.review-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.value === value);
+            });
+        }
+
+        function saveDailyReview() {
+            const today = new Date().toDateString();
+            
+            appData.dailyReviews.push({
+                date: today,
+                q1: currentReview.q1,
+                q2: currentReview.q2,
+                q3: document.getElementById('reviewQ3').value,
+                createdAt: Date.now()
+            });
+
+            // 检查是否有拖延
+            if (currentReview.q2 === '拖延') {
+                showTipModal('⏰', '法则提示', lawTips.拖延);
+            }
+
+            saveData();
+            closeModal('dailyReviewModal');
+            currentReview = { q1: '', q2: '', q3: '' };
+            
+            // 重置选项
+            document.querySelectorAll('.review-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('reviewQ3').value = '';
+            
+            showToast('✅ 复盘已保存');
+        }
+
+        // ===== 每周复盘 =====
+        function renderWeekReview() {
+            const now = new Date();
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            // 统计本周完成的A类任务
+            const weekFrogs = appData.frogs.filter(f => {
+                const created = new Date(f.createdAt);
+                return created >= weekAgo && f.priority === 'A';
+            });
+            
+            const completedCount = weekFrogs.filter(f => f.completed).length;
+            const totalCount = weekFrogs.length;
+            
+            const rate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+            document.getElementById('weekCompletionRate').textContent = rate + '%';
+
+            // 渲染本周完成列表
+            const container = document.getElementById('weekCompletedFrogs');
+            const completedFrogs = weekFrogs.filter(f => f.completed);
+            
+            if (completedFrogs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>暂无完成记录</p></div>';
+            } else {
+                container.innerHTML = completedFrogs.map(f => `
+                    <div class="frog-card">
+                        <div class="frog-title">${f.title}</div>
+                        <div class="frog-meta">
+                            <span style="color: var(--success);">✅ 已完成</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ===== 弹窗控制 =====
+        function showModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showAchievement() {
+            showModal('achievementModal');
+        }
+
+        function showTipModal(icon, title, content) {
+            document.getElementById('tipIcon').textContent = icon;
+            document.getElementById('tipTitle').textContent = title;
+            document.getElementById('tipContent').textContent = content;
+            showModal('tipModal');
+        }
+
+        // ===== Toast提示 =====
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ===== 提醒功能 =====
+        function setupReminder() {
+            // 设置青蛙启动时间提醒
+            setInterval(() => {
+                const now = new Date();
+                const [hour, minute] = settings.frogTime.split(':').map(Number);
+                
+                if (now.getHours() === hour && now.getMinutes() === minute && settings.reminderEnabled) {
+                    showToast('🐸 到了吃掉青蛙的时间！');
+                }
+            }, 60000);
+        }
+
+        function toggleReminder() {
+            settings.reminderEnabled = !settings.reminderEnabled;
+            document.getElementById('reminderToggle').classList.toggle('active', settings.reminderEnabled);
+            saveSettings();
+        }
+
+        // ===== 数据导出 =====
+        function exportData() {
+            const data = {
+                frogs: appData.frogs,
+                dailyReviews: appData.dailyReviews,
+                exportedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `eat_that_frog_backup_${new Date().toDateString()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('✅ 数据导出成功');
+        }
+
+        // ===== 清空数据 =====
+        function clearData() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                if (confirm('再次确认：真的会删除所有数据吗？')) {
+                    appData = {
+                        frogs: [],
+                        dailyReviews: [],
+                        weekReviews: [],
+                        lastActionTime: Date.now()
+                    };
+                    saveData();
+                    renderFrogs();
+                    renderWeekReview();
+                    showToast('✅ 数据已清空');
+                }
+            }
+        }
+
+        // ===== 事件监听 =====
+        document.getElementById('frogTime').addEventListener('change', saveSettings);
+
+        // 打开添加青蛙弹窗
+        window.openAddFrogModal = function() {
+            const today = new Date().toDateString();
+            const hasCoreFrog = appData.frogs.some(f => f.date === today && f.priority === 'A');
+            
+            const tipBox = document.getElementById('addTipBox');
+            if (!hasCoreFrog) {
+                tipBox.innerHTML = '💡 <strong>思考引导：</strong>这件事是否是今天能带来最大价值的事？是否是你最不想做但必须做的？';
+                tipBox.classList.remove('hidden');
+            } else {
+                tipBox.classList.add('hidden');
+            }
+            
+            showModal('addFrogModal');
+        };
+
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>
